@@ -14,36 +14,38 @@ export const LandingScreen = () => {
   );
 
   useEffect(() => {
-    (async () => {
-      const { status } = await Location.requestForegroundPermissionsAsync();
-      if (status !== Location.PermissionStatus.GRANTED) {
-        setErrorMsg('Permission to access location is not granted.');
-      }
-      const location: Location.LocationObject =
-        await Location.getCurrentPositionAsync();
-      const { coords } = location;
-      if (coords) {
-        const { latitude, longitude } = coords;
-        const addressReponse: Location.LocationGeocodedAddress[] =
-          await Location.reverseGeocodeAsync({
-            latitude,
-            longitude,
-          });
-        for (const item of addressReponse) {
-          setAddress(item);
-          const currentAddress = `${item.name}, ${item.street}, ${item.postalCode}, ${item.country}`;
-          setDisplayAddress(currentAddress);
-          if (currentAddress.length > 0) {
-            setTimeout(() => {
-              navigate('homeStack');
-            }, 2000);
-          }
-          return;
+    init();
+  }, []);
+
+  const init = async () => {
+    const { status } = await Location.requestForegroundPermissionsAsync();
+    if (status !== Location.PermissionStatus.GRANTED) {
+      setErrorMsg('Permission to access location is not granted.');
+    }
+    const location: Location.LocationObject =
+      await Location.getCurrentPositionAsync();
+    const { coords } = location;
+    if (coords) {
+      const { latitude, longitude } = coords;
+      const addressReponse: Location.LocationGeocodedAddress[] =
+        await Location.reverseGeocodeAsync({
+          latitude,
+          longitude,
+        });
+      for (const item of addressReponse) {
+        setAddress(item);
+        const currentAddress = `${item.name}, ${item.street}, ${item.postalCode}, ${item.country}`;
+        setDisplayAddress(currentAddress);
+        if (currentAddress.length > 0) {
+          setTimeout(() => {
+            navigate('homeStack');
+          }, 2000);
         }
         return;
       }
-    })();
-  }, []);
+      return;
+    }
+  };
 
   return (
     <View style={styles.container}>

@@ -5,6 +5,8 @@ import { createStackNavigator } from 'react-navigation-stack';
 import { HomeScreen } from './src/screens/HomeScreen';
 import { Image, StyleSheet } from 'react-native';
 import { LandingScreen } from './src/screens/LandingScreen';
+import { Provider } from 'react-redux';
+import { store } from './src/redux';
 
 const switchNavigator = createSwitchNavigator({
   landingStack: {
@@ -21,9 +23,16 @@ const switchNavigator = createSwitchNavigator({
   },
   homeStack: createBottomTabNavigator({
     home: {
-      screen: createStackNavigator({
-        HomePage: HomeScreen,
-      }),
+      screen: createStackNavigator(
+        {
+          HomePage: HomeScreen,
+        },
+        {
+          defaultNavigationOptions: {
+            headerShown: false,
+          },
+        }
+      ),
       navigationOptions: {
         tabBarIcon: ({ focused, tintColor }) => {
           const icon =
@@ -82,7 +91,11 @@ const switchNavigator = createSwitchNavigator({
 const AppNavigation = createAppContainer(switchNavigator);
 
 export default function App() {
-  return <AppNavigation />;
+  return (
+    <Provider store={store}>
+      <AppNavigation />
+    </Provider>
+  );
 }
 
 const styles = StyleSheet.create({

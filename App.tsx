@@ -6,6 +6,7 @@ import { HomeScreen } from './src/screens/HomeScreen';
 import { Image, StyleSheet } from 'react-native';
 import { LandingScreen } from './src/screens/LandingScreen';
 import { Provider } from 'react-redux';
+import { SearchScreen } from './src/screens/SearchScreen';
 import { store } from './src/redux';
 
 const switchNavigator = createSwitchNavigator({
@@ -26,6 +27,7 @@ const switchNavigator = createSwitchNavigator({
       screen: createStackNavigator(
         {
           HomePage: HomeScreen,
+          SearchPage: SearchScreen,
         },
         {
           defaultNavigationOptions: {

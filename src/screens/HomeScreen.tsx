@@ -1,10 +1,16 @@
 import React, { useEffect } from 'react';
+import { ButtonWithIcon, CategoryCard, SearchBar } from '../components';
 import { connect } from 'react-redux';
+import { FlatList, StyleSheet, Text, View } from 'react-native';
+import { RestaurantCard } from '../components/RestaurantCard';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { StyleSheet, Text, View } from 'react-native';
+import { ScrollView } from 'react-native-gesture-handler';
+import { useNavigation } from '../utils';
 import {
   ApplicationState,
+  FoodModel,
   onAvailability,
+  RestaurantModel,
   ShoppingState,
   UserState,
 } from '../redux';
@@ -16,6 +22,7 @@ interface HomeProps {
 }
 
 const _HomeScreen: React.FC<HomeProps> = props => {
+  const { navigate } = useNavigation();
   const { location } = props.userReducer;
   const { availability } = props.shoppingReducer;
   const { categories, foods, restaurants } = availability;
@@ -25,6 +32,14 @@ const _HomeScreen: React.FC<HomeProps> = props => {
     onAvailability(location.postalCode);
   }, []);
 
+  const onTapRestaurant = (item: RestaurantModel) => {
+    navigate('RestaurantPage', { restaurant: item });
+  };
+
+  const onTapFood = (item: FoodModel) => {
+    navigate('FoodDetailPage', { food: item });
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.navigation}>
@@ -33,14 +48,87 @@ const _HomeScreen: React.FC<HomeProps> = props => {
           <Text>Edit</Text>
         </View>
         <View style={styles.searchBar}>
-          <Text>Search Bar</Text>
+          <SearchBar
+            didTouch={() => {
+              navigate('SearchPage');
+            }}
+            onTextChange={() => {
+              null;
+            }}
+          />
+          <ButtonWithIcon
+            onTap={() => {
+              null;
+            }}
+            icon={require('../images/hambar.png')}
+            width={50}
+            height={40}
+          />
         </View>
       </View>
       <View style={styles.body}>
-        <Text>Home Screen</Text>
-      </View>
-      <View style={styles.footer}>
-        <Text>Footer</Text>
+        <ScrollView>
+          <FlatList
+            bounces={true}
+            alwaysBounceHorizontal={true}
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            data={categories}
+            renderItem={({ item }) => (
+              <CategoryCard
+                item={item}
+                onTap={() => {
+                  alert('Category tapped');
+                }}
+              />
+            )}
+            keyExtractor={item => `${item.id}`}
+          />
+          <View>
+            <Text
+              style={{
+                fontSize: 25,
+                fontWeight: '600',
+                color: '#f15b5d',
+                marginLeft: 20,
+              }}
+            >
+              {' '}
+              Top Restaurants
+            </Text>
+          </View>
+          <FlatList
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            data={restaurants}
+            renderItem={({ item }) => (
+              <RestaurantCard item={item} onTap={onTapRestaurant} />
+            )}
+            keyExtractor={item => `${item._id}`}
+          />
+          <View>
+            <Text
+              style={{
+                fontSize: 25,
+                fontWeight: '600',
+                color: '#f15b5d',
+                marginLeft: 20,
+              }}
+            >
+              {' '}
+              30 Minutes Foods
+            </Text>
+          </View>
+          <FlatList
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            data={foods}
+            renderItem={({ item }) => (
+              <RestaurantCard item={item} onTap={onTapFood} />
+            )}
+            keyExtractor={item => `${item._id}`}
+          />
+        </ScrollView>
       </View>
     </SafeAreaView>
   );
@@ -48,12 +136,11 @@ const _HomeScreen: React.FC<HomeProps> = props => {
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: 'green',
+    backgroundColor: 'white',
     flex: 1,
   },
   navigation: {
     flex: 2,
-    backgroundColor: 'red',
   },
   location: {
     marginTop: 20,
@@ -65,18 +152,17 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
   },
   searchBar: {
-    flex: 8,
-    backgroundColor: 'purple',
+    display: 'flex',
+    height: 60,
+    justifyContent: 'space-around',
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginLeft: 4,
   },
   body: {
-    flex: 9,
+    flex: 10,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: 'yellow',
-  },
-  footer: {
-    flex: 1,
-    backgroundColor: 'cyan',
   },
 });
 
